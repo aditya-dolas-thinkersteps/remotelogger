@@ -1,0 +1,6 @@
+{
+  "name": "Remix LogForge",
+  "description": "A high-performance remote logging and debugging dashboard for Shopify Remix applications. Avoid console.log clutter with structured, real-time log streams.",
+  "requestFramePermissions": [],
+  "majorCapabilities": []
+}
