@@ -1,0 +1,50 @@
+name: Remote Shopify debug logs Image
+
+on:
+  workflow_dispatch:
+    # inputs:
+    #   environment:
+    #     description: 'Environment to deploy (staging/production)'
+    #     required: true
+    #     default: 'production'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    env:
+      IMAGE_NAME: shopify-remote-logger
+      DOCKER_REGISTRY: docker.io
+      DOCKERFILE_PATH: .
+
+    steps:
+      # Checkout code
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      # Set up Docker
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # - name: Log in to Docker registry
+      #   uses: docker/login-action@v3
+      #   with:
+      #     DOCKER_REGISTRY_URL: docker.io
+      #     DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+      #     DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
+      - name: docker login
+        env:
+          USER: ${{ secrets.USERNAME_DOCKER }}
+          PASS: ${{ secrets.PASSWORD_DOCKER }}
+        run: docker login -u "$USER" -p "$PASS"
+
+      # Build Docker image
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ env.DOCKERFILE_PATH }}
+          file: ${{ env.DOCKERFILE_PATH }}/Dockerfile
+          push: true
+          tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:latest
+          # tags: ${{ secrets.DOCKER_USERNAME }}/${{ env.IMAGE_NAME }}:${{ github.sha }}
